@@ -15,3 +15,4 @@ hangman.o : hangman.cpp hangman.h
 clean:
 	rm *.o
 	rm HM
+	rm saved-games/*

@@ -2,7 +2,7 @@
 
 
 /*
-    Main method for the hangman program
+ Main method for the hangman program
  */
 int main(int argc, char** argv) {
     if(argc == 2) {
@@ -11,8 +11,10 @@ int main(int argc, char** argv) {
             cout << "To start new game, enter ./HM" << endl;
             cout << "To resume old game, enter ./HM <filename>.txt" << endl;
         }
-        Hangman old_game(argv[1]);
-        old_game.play();
+        else {
+            Hangman old_game(argv[1]);
+            old_game.play();
+        }
     }
     else {
         
@@ -25,7 +27,7 @@ int main(int argc, char** argv) {
 
 /*
  Purpose:   Read each word of an alphabetized dictionary file into
-            a vector of strings.
+ a vector of strings.
  Parameters: string filename for the dictionary
  Return: A vector<string> of the dictionary words
  */
