@@ -9,20 +9,23 @@ void play_hangman(string filename) {
     Hangman game(dict);
     int num_guesses = 0;
     int max_guesses = 8;
+    bool is_won = false;
     
     cout << "Welcome to Hangman" << endl << endl;
     
-    while(!game.get_win() && num_guesses < max_guesses) {
+    while(!is_won && num_guesses < max_guesses) {
         
-        cout << "Guess number " << to_string(num_guesses);
-        cout << " of " << to_string(max_guesses) << endl;
+        cout << to_string(num_guesses) << " of ";
+        cout << to_string(max_guesses) << " wrong letters" << endl;
         cout << "Enter a letter: ";
         char c;
         cin >> c;
         cout << endl;
-        game.make_guess(c);
+        if(!game.make_guess(c)) {
+            ++num_guesses;
+        }
         cout << game.get_str() << endl;
-        ++num_guesses;
+        is_won = game.get_win();
     }
     
     if(game.get_win()) {
@@ -30,6 +33,7 @@ void play_hangman(string filename) {
     }
     else {
         cout << "You lose" << endl;
+        cout << "Answer was " << game.get_answer() << endl;
     }
 }
 

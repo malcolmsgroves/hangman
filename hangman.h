@@ -19,6 +19,7 @@ public:
     bool get_win();
     string get_str();
     bool make_guess(char c);
+    string get_answer();
     
 private:
     bool win;

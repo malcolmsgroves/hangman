@@ -13,17 +13,13 @@ Hangman::Hangman(vector<string> dict) {
 bool Hangman::make_guess(char c) {
     c = tolower(c);
     bool is_char = false;
-    bool win_check = true;
+    
     for(int i = 0; i < random_word.length(); ++i) {
-        if(curr_word[i] == '_') {
-            win_check = false;
-        }
         if(c == random_word[i] || toupper(c) == random_word[i]) {
             is_char = true;
             curr_word[i] = random_word[i];
         }
     }
-    win = win_check;
     return is_char;
 }
 
@@ -46,7 +42,18 @@ string Hangman::get_str() {
 
 // get method for win status
 bool Hangman::get_win() {
-    return win;
+    bool win_check = true;
+    for(int i = 0; i < curr_word.length(); ++i) {
+        if(curr_word[i] == '_') {
+            win_check = false;
+        }
+    }
+    return win_check;
+}
+
+// get method for answer string
+string Hangman::get_answer() {
+    return random_word;
 }
 
 // searches for word in dictionary using binary search
