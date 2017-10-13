@@ -1,42 +1,34 @@
 #include "main.h"
 
-int main(int argc, char** argv) {
-    play_hangman("5desk.txt");
-}
 
-void play_hangman(string filename) {
-    vector<string> dict = read_file(filename);
-    Hangman game(dict);
-    int num_guesses = 0;
-    int max_guesses = 8;
-    bool is_won = false;
-    
-    cout << "Welcome to Hangman" << endl << endl;
-    
-    while(!is_won && num_guesses < max_guesses) {
-        
-        cout << to_string(num_guesses) << " of ";
-        cout << to_string(max_guesses) << " wrong letters" << endl;
-        cout << "Enter a letter: ";
-        char c;
-        cin >> c;
-        cout << endl;
-        if(!game.make_guess(c)) {
-            ++num_guesses;
+/*
+    Main method for the hangman program
+ */
+int main(int argc, char** argv) {
+    if(argc == 2) {
+        if(argv[1][0] == '?') {
+            cout << "-options-" << endl;
+            cout << "To start new game, enter ./HM" << endl;
+            cout << "To resume old game, enter ./HM <filename>.txt" << endl;
         }
-        cout << game.get_str() << endl;
-        is_won = game.get_win();
-    }
-    
-    if(game.get_win()) {
-        cout << "Congratulations, you win" << endl;
+        Hangman old_game(argv[1]);
+        old_game.play();
     }
     else {
-        cout << "You lose" << endl;
-        cout << "Answer was " << game.get_answer() << endl;
+        
+        Hangman new_game(read_file("5desk.txt"));
+        
+        new_game.play();
     }
 }
 
+
+/*
+ Purpose:   Read each word of an alphabetized dictionary file into
+            a vector of strings.
+ Parameters: string filename for the dictionary
+ Return: A vector<string> of the dictionary words
+ */
 vector<string> read_file(string dict_file_name) {
     
     vector<string> dict;
@@ -55,7 +47,7 @@ vector<string> read_file(string dict_file_name) {
     while(dict_stream.peek() != EOF) {
         dict_stream.get(curr_char);
         
-        // stop at newline or whitespace
+        // stop at newline
         if(curr_char != '\n') {
             curr_word += curr_char;
         } else {
@@ -66,4 +58,47 @@ vector<string> read_file(string dict_file_name) {
     }
     
     return dict;
+}
+
+
+
+
+/*
+ Purpose:    Check if a word is contained in the dictionary
+ vector using binary search.
+ Parameters: The string word to search for in the dictionary.
+ Return:     True if string is found, false otherwise.
+ */
+bool binary_search(vector<string> dictionary, string word) {
+    int min = 0;
+    int max = dictionary.size() - 1;
+    
+    while(max >= min) {
+        
+        int middle = (max + min) / 2;
+        
+        string temp_dict = dictionary[middle];
+        
+        // make the dictionary word lowercase
+        for(int i = 0; i < temp_dict.length(); ++i) {
+            temp_dict[i] = tolower(temp_dict[i]);
+        }
+        
+        int compare_str = word.compare(temp_dict);
+        
+        if(compare_str == 0) {
+            return true;
+        }
+        if(compare_str < 0) {
+            max = middle - 1;
+        }
+        else {
+            min = middle + 1;
+        }
+    }
+    
+    
+    // if while loop exited, return false
+    return false;
+    
 }

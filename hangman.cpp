@@ -1,39 +1,144 @@
 #include "hangman.h"
 
+// constructor method for new game
 Hangman::Hangman(vector<string> dict) {
+    
     this->dictionary = dict;
+    this->num_wrong = 0;
+    this->answer_word = choose_word();
     this->win = false;
-    choose_word();
-    for(int i = 0; i < random_word.length(); ++i) {
+    for(int i = 0; i < answer_word.length(); ++i) {
         this->curr_word += '_';
     }
-    
 }
 
+// alternative constructor to resurrect old game
+Hangman::Hangman(string filename) {
+    Game old_game = unserialize(filename);
+    this->num_wrong = old_game.num_wrong;
+    this->answer_word = old_game.answer;
+    this->curr_word = old_game.guess;
+    this->win = false;
+}
+
+
+/*
+ Purpose:   Play a game of hangman in terminal using the
+ Hangman class and associated methods.
+*/
+void Hangman::play() {
+    
+    cout << "Welcome to Hangman" << endl << endl;
+    cout << get_str() << endl;
+    
+    while(!get_win() && num_wrong < MAX_WRONG) {
+        
+        cout << to_string(num_wrong) << " of ";
+        cout << to_string(MAX_WRONG) << " wrong letters" << endl;
+        cout << "Enter a letter or enter ! to save game and exit: ";
+        char c;
+        cin >> c;
+        if(c == '!') {
+            Game to_save;
+            to_save.num_wrong = num_wrong;
+            to_save.answer = answer_word;
+            to_save.guess = curr_word;
+            cout << "Enter filename with .txt extension: ";
+            string filename;
+            cin >> filename;
+            serialize(filename, to_save);
+            return;
+        }
+        cout << endl;
+        if(!make_guess(c)) {
+            ++num_wrong;
+        }
+        cout << get_str() << endl;
+    }
+    
+    if(get_win()) {
+        cout << "Congratulations, you win" << endl;
+    }
+    else {
+        cout << "You lose" << endl;
+        cout << "Answer was " << get_answer() << endl;
+    }
+}
+
+
+//Game Hangman::get_game() {
+//    Game game = unserialize("test.txt");
+//    if(game.num_wrong < 0) {
+//        cout << "No saved game. Beginning new game..." << endl;
+//        
+//    }
+//    
+//}
+
+
+/*
+ Purpose: Pick a random word from the dictionary vector
+ */
+string Hangman::choose_word() {
+    srand(time(NULL));
+    string rand_str = "a";
+    
+    while(rand_str.length() < MIN_WORD_LENGTH || rand_str.length() > MAX_WORD_LENGTH) {
+        rand_str = dictionary[rand() % dictionary.size()];
+        cout << rand_str << endl;
+    }
+    
+    return rand_str;
+}
+
+
+Game Hangman::unserialize(string filename) {
+    Game old_game;
+    ifstream gamefile;
+    gamefile.open(GAME_DIRECTORY + filename, ios::in);
+    if(!gamefile.good()) {
+        cout << "Error: not able to open file" << endl;
+        exit(1);
+    }
+    gamefile >> old_game.guess >> old_game.answer >> old_game.num_wrong;
+    
+    gamefile.close();
+    return old_game;
+}
+
+void Hangman::serialize(string filename, Game save_game) {
+    ofstream gamefile(GAME_DIRECTORY + filename);
+    if(!gamefile.good()) {
+        cout << "Error: not able to open file" << endl;
+    }
+    gamefile << save_game.guess << endl;
+    gamefile << save_game.answer << endl;
+    gamefile << to_string(save_game.num_wrong);
+    gamefile.close();
+}
+
+
+
+/*
+ Purpose:   Take a char c and fill in all indices of
+            curr_word that are equal to c in the answer_word
+ Parameters: The char c to check in the answer_word
+ Return:    True if char c is found in the answer_word, false
+            otherwise.
+ */
 bool Hangman::make_guess(char c) {
     c = tolower(c);
     bool is_char = false;
     
-    for(int i = 0; i < random_word.length(); ++i) {
-        if(c == random_word[i] || toupper(c) == random_word[i]) {
+    for(int i = 0; i < answer_word.length(); ++i) {
+        if(c == answer_word[i] || toupper(c) == answer_word[i]) {
             is_char = true;
-            curr_word[i] = random_word[i];
+            curr_word[i] = answer_word[i];
         }
     }
     return is_char;
 }
 
-void Hangman::choose_word() {
-    srand(time(NULL));
-    string rand_str = "a";
-    
-    while(rand_str.length() < 5 || rand_str.length() > 12) {
-        rand_str = dictionary[rand() % dictionary.size()];
-        cout << rand_str << endl;
-    }
-    
-    this->random_word = rand_str;
-}
 
 // get method for the current word
 string Hangman::get_str() {
@@ -53,40 +158,6 @@ bool Hangman::get_win() {
 
 // get method for answer string
 string Hangman::get_answer() {
-    return random_word;
+    return answer_word;
 }
 
-// searches for word in dictionary using binary search
-bool Hangman::binary_search(string word) {
-    int min = 0;
-    int max = dictionary.size() - 1;
-    
-    while(max >= min) {
-        
-        int middle = (max + min) / 2;
-        
-        string temp_dict = dictionary[middle];
-        
-        // make the dictionary word lowercase
-        for(int i = 0; i < temp_dict.length(); ++i) {
-            temp_dict[i] = tolower(temp_dict[i]);
-        }
-        
-        int compare_str = word.compare(temp_dict);
-        
-        if(compare_str == 0) {
-            return true;
-        }
-        if(compare_str < 0) {
-            max = middle - 1;
-        }
-        else {
-            min = middle + 1;
-        }
-    }
-    
-    
-    // if while loop exited, return false
-    return false;
-    
-}
