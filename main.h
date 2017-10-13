@@ -10,5 +10,6 @@
 using namespace std;
 
 vector<string> read_file(string dict_file_name);
+void play_hangman(string dict_file_name);
 
 #endif

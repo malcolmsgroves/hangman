@@ -16,17 +16,21 @@ public:
     Hangman(vector<string> dict);
     void play();
     bool binary_search(string word);
+    bool get_win();
+    string get_str();
+    bool make_guess(char c);
     
 private:
-    bool correct_guess;
+    bool win;
     string random_word;
     string curr_word;
     vector<string> dictionary;
     int guess_count;
     
-    void make_guess(char c);
+    
     void choose_word();
     void print_game();
+    
 };
 
 #endif
