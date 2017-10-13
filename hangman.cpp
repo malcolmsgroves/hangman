@@ -29,7 +29,7 @@ Hangman::Hangman(string filename) {
 void Hangman::play() {
     
     cout << "Welcome to Hangman" << endl << endl;
-    cout << get_str() << endl;
+    print_str();
     
     while(!get_win() && num_wrong < MAX_WRONG) {
         
@@ -53,7 +53,8 @@ void Hangman::play() {
         if(!make_guess(c)) {
             ++num_wrong;
         }
-        cout << get_str() << endl;
+        
+        print_str();
     }
     
     if(get_win()) {
@@ -65,15 +66,6 @@ void Hangman::play() {
     }
 }
 
-
-//Game Hangman::get_game() {
-//    Game game = unserialize("test.txt");
-//    if(game.num_wrong < 0) {
-//        cout << "No saved game. Beginning new game..." << endl;
-//        
-//    }
-//    
-//}
 
 
 /*
@@ -141,8 +133,11 @@ bool Hangman::make_guess(char c) {
 
 
 // get method for the current word
-string Hangman::get_str() {
-    return curr_word;
+void Hangman::print_str() {
+    for(int i = 0; i < curr_word.length(); ++i) {
+        cout << curr_word[i] << " ";
+    }
+    cout << endl;
 }
 
 // get method for win status
