@@ -13,7 +13,6 @@ vector<string> read_file(string dict_file_name) {
     
     ifstream dict_stream;
     
-    // should include .c_str()
     dict_stream.open(dict_file_name.c_str(), ios::in);
     
     if(!dict_stream.good()) {

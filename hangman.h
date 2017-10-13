@@ -21,7 +21,7 @@ private:
     int guess_count;
     
     void make_guess(char c);
-    void read_dict(string filename);
+    bool binary_search(string word);
     void print_game();
 };
 
