@@ -2,9 +2,8 @@
 
 int main(int argc, char** argv) {
     vector<string> dict = read_file("5desk.txt");
-    for(int i = 0; i < 10; ++i) {
-        cout << dict[i] << endl;
-    }
+    Hangman hangman(dict);
+    cout << hangman.binary_search(argv[1]) << endl;
 }
 
 vector<string> read_file(string dict_file_name) {
@@ -24,10 +23,13 @@ vector<string> read_file(string dict_file_name) {
     
     while(dict_stream.peek() != EOF) {
         dict_stream.get(curr_char);
+        
+        // stop at newline or whitespace
         if(curr_char != '\n') {
             curr_word += curr_char;
         } else {
-            dict.push_back(curr_word);
+            // remove whitespace at end and add to dict
+            dict.push_back(curr_word.substr(0, curr_word.length() - 1));
             curr_word = "";
         }
     }
